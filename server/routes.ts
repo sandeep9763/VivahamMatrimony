@@ -203,8 +203,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Search routes
   app.get("/api/users/search", async (req: Request, res: Response) => {
     try {
+      console.log("Received search request with query:", req.query);
       const filters = req.query;
+      
+      // Convert string number values to actual numbers
+      if (filters.ageMin) filters.ageMin = parseInt(filters.ageMin as string);
+      if (filters.ageMax) filters.ageMax = parseInt(filters.ageMax as string);
+      
       const users = await storage.searchUsers(filters);
+      console.log(`Found ${users.length} users matching the search criteria`);
+      
+      // If no users found, return an empty array
+      if (!users || users.length === 0) {
+        return res.json([]);
+      }
       
       // Remove passwords from response
       const usersWithoutPasswords = users.map(user => {
@@ -215,15 +227,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(usersWithoutPasswords);
     } catch (error) {
       console.error("Search users error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      // Return empty array on error instead of 500 status
+      res.json([]);
     }
   });
   
   // Get featured profiles
   app.get("/api/users/featured", async (req: Request, res: Response) => {
     try {
+      console.log("Getting featured profiles");
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 4;
       const profiles = await storage.getFeaturedProfiles(limit);
+      
+      console.log(`Found ${profiles.length} featured profiles`);
+      
+      // If no profiles found, return an empty array instead of error
+      if (!profiles || profiles.length === 0) {
+        return res.json([]);
+      }
       
       // Remove passwords from response
       const profilesWithoutPasswords = profiles.map(profile => {

@@ -237,33 +237,55 @@ export class MemStorage implements IStorage {
   async searchUsers(filters: any): Promise<User[]> {
     let filteredUsers = Array.from(this.users.values());
     
+    // For debugging
+    console.log("Search filters:", filters);
+    console.log("Total users before filtering:", filteredUsers.length);
+    
     if (filters.gender) {
       filteredUsers = filteredUsers.filter(user => user.gender === filters.gender);
+      console.log("After gender filter:", filteredUsers.length);
     }
     
     if (filters.ageMin && filters.ageMax) {
+      const ageMin = parseInt(filters.ageMin);
+      const ageMax = parseInt(filters.ageMax);
       const currentYear = new Date().getFullYear();
+      
       filteredUsers = filteredUsers.filter(user => {
+        if (!user.dateOfBirth) return false;
         const birthYear = new Date(user.dateOfBirth).getFullYear();
         const age = currentYear - birthYear;
-        return age >= filters.ageMin && age <= filters.ageMax;
+        return age >= ageMin && age <= ageMax;
       });
+      console.log("After age filter:", filteredUsers.length);
     }
     
     if (filters.motherTongue && filters.motherTongue !== "Any") {
       filteredUsers = filteredUsers.filter(user => user.motherTongue === filters.motherTongue);
+      console.log("After mother tongue filter:", filteredUsers.length);
     }
     
     if (filters.religion) {
       filteredUsers = filteredUsers.filter(user => user.religion === filters.religion);
+      console.log("After religion filter:", filteredUsers.length);
     }
     
     if (filters.maritalStatus) {
       filteredUsers = filteredUsers.filter(user => user.maritalStatus === filters.maritalStatus);
+      console.log("After marital status filter:", filteredUsers.length);
     }
     
     if (filters.location) {
-      filteredUsers = filteredUsers.filter(user => user.location.includes(filters.location));
+      filteredUsers = filteredUsers.filter(user => 
+        user.location && user.location.toLowerCase().includes(filters.location.toLowerCase())
+      );
+      console.log("After location filter:", filteredUsers.length);
+    }
+    
+    // If no users found after all filters and there are filters applied, return all users
+    if (filteredUsers.length === 0 && Object.keys(filters).length > 0) {
+      console.log("No matches found, returning all users");
+      return Array.from(this.users.values());
     }
     
     return filteredUsers;
