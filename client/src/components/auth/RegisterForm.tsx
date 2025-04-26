@@ -88,11 +88,11 @@ const RegisterForm = ({ onRegisterSuccess }: RegisterFormProps) => {
       } else {
         navigate("/create-profile");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Registration error:", error);
       toast({
         title: "Registration failed",
-        description: "There was an error creating your account. Please try again.",
+        description: error.message || "Username may already exist. Please try a different username.",
         variant: "destructive",
       });
     } finally {
