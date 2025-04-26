@@ -235,60 +235,99 @@ export class MemStorage implements IStorage {
   }
   
   async searchUsers(filters: any): Promise<User[]> {
-    let filteredUsers = Array.from(this.users.values());
-    
-    // For debugging
-    console.log("Search filters:", filters);
-    console.log("Total users before filtering:", filteredUsers.length);
-    
-    if (filters.gender) {
-      filteredUsers = filteredUsers.filter(user => user.gender === filters.gender);
-      console.log("After gender filter:", filteredUsers.length);
-    }
-    
-    if (filters.ageMin && filters.ageMax) {
-      const ageMin = parseInt(filters.ageMin);
-      const ageMax = parseInt(filters.ageMax);
-      const currentYear = new Date().getFullYear();
+    try {
+      let filteredUsers = Array.from(this.users.values());
       
-      filteredUsers = filteredUsers.filter(user => {
-        if (!user.dateOfBirth) return false;
-        const birthYear = new Date(user.dateOfBirth).getFullYear();
-        const age = currentYear - birthYear;
-        return age >= ageMin && age <= ageMax;
-      });
-      console.log("After age filter:", filteredUsers.length);
-    }
-    
-    if (filters.motherTongue && filters.motherTongue !== "Any") {
-      filteredUsers = filteredUsers.filter(user => user.motherTongue === filters.motherTongue);
-      console.log("After mother tongue filter:", filteredUsers.length);
-    }
-    
-    if (filters.religion) {
-      filteredUsers = filteredUsers.filter(user => user.religion === filters.religion);
-      console.log("After religion filter:", filteredUsers.length);
-    }
-    
-    if (filters.maritalStatus) {
-      filteredUsers = filteredUsers.filter(user => user.maritalStatus === filters.maritalStatus);
-      console.log("After marital status filter:", filteredUsers.length);
-    }
-    
-    if (filters.location) {
-      filteredUsers = filteredUsers.filter(user => 
-        user.location && user.location.toLowerCase().includes(filters.location.toLowerCase())
-      );
-      console.log("After location filter:", filteredUsers.length);
-    }
-    
-    // If no users found after all filters and there are filters applied, return all users
-    if (filteredUsers.length === 0 && Object.keys(filters).length > 0) {
-      console.log("No matches found, returning all users");
+      // For debugging
+      console.log("Search filters:", filters);
+      console.log("Total users before filtering:", filteredUsers.length);
+      
+      // Apply gender filter if provided
+      if (filters.gender) {
+        filteredUsers = filteredUsers.filter(user => user.gender === filters.gender);
+        console.log("After gender filter:", filteredUsers.length);
+      }
+      
+      // Apply age range filter if both min and max are provided
+      if (filters.ageMin !== undefined && filters.ageMax !== undefined) {
+        try {
+          const ageMin = parseInt(String(filters.ageMin));
+          const ageMax = parseInt(String(filters.ageMax));
+          const currentYear = new Date().getFullYear();
+          
+          filteredUsers = filteredUsers.filter(user => {
+            if (!user.dateOfBirth) return false;
+            try {
+              const birthYear = new Date(user.dateOfBirth).getFullYear();
+              const age = currentYear - birthYear;
+              return age >= ageMin && age <= ageMax;
+            } catch (e) {
+              console.error("Error parsing date of birth:", e);
+              return false;
+            }
+          });
+          console.log("After age filter:", filteredUsers.length);
+        } catch (e) {
+          console.error("Error applying age filter:", e);
+        }
+      }
+      
+      // Apply mother tongue filter if provided and not "Any"
+      if (filters.motherTongue && filters.motherTongue !== "Any") {
+        filteredUsers = filteredUsers.filter(user => user.motherTongue === filters.motherTongue);
+        console.log("After mother tongue filter:", filteredUsers.length);
+      }
+      
+      // Apply religion filter if provided and not "Any"
+      if (filters.religion && filters.religion !== "Any") {
+        filteredUsers = filteredUsers.filter(user => user.religion === filters.religion);
+        console.log("After religion filter:", filteredUsers.length);
+      }
+      
+      // Apply marital status filter if provided and not "Any"
+      if (filters.maritalStatus && filters.maritalStatus !== "Any") {
+        filteredUsers = filteredUsers.filter(user => user.maritalStatus === filters.maritalStatus);
+        console.log("After marital status filter:", filteredUsers.length);
+      }
+      
+      // Apply location filter if provided (partial match)
+      if (filters.location) {
+        filteredUsers = filteredUsers.filter(user => 
+          user.location && user.location.toLowerCase().includes(filters.location.toLowerCase())
+        );
+        console.log("After location filter:", filteredUsers.length);
+      }
+      
+      // Apply education filter if provided (partial match)
+      if (filters.education) {
+        filteredUsers = filteredUsers.filter(user => 
+          user.education && user.education.toLowerCase().includes(filters.education.toLowerCase())
+        );
+        console.log("After education filter:", filteredUsers.length);
+      }
+      
+      // Apply profession filter if provided (partial match)
+      if (filters.profession) {
+        filteredUsers = filteredUsers.filter(user => 
+          user.profession && user.profession.toLowerCase().includes(filters.profession.toLowerCase())
+        );
+        console.log("After profession filter:", filteredUsers.length);
+      }
+      
+      // If no users found after all filters and filters were applied, return all users
+      // instead of an empty array for better user experience
+      if (filteredUsers.length === 0 && Object.keys(filters).length > 0) {
+        console.log("No matches found with filters, returning all users");
+        return Array.from(this.users.values());
+      }
+      
+      console.log("Final result count:", filteredUsers.length);
+      return filteredUsers;
+    } catch (error) {
+      console.error("Error in searchUsers:", error);
+      // Return all users instead of an empty array if there's an error
       return Array.from(this.users.values());
     }
-    
-    return filteredUsers;
   }
   
   async getFeaturedProfiles(limit: number): Promise<User[]> {

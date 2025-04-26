@@ -243,11 +243,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (filters.ageMin) filters.ageMin = parseInt(filters.ageMin as string);
       if (filters.ageMax) filters.ageMax = parseInt(filters.ageMax as string);
       
+      // Pass through the search filters
+      console.log("Sending filters to searchUsers:", filters);
       const users = await storage.searchUsers(filters);
-      console.log(`Found ${users.length} users matching the search criteria`);
+      console.log(`Found ${users?.length || 0} users matching the search criteria`);
       
-      // If no users found, return an empty array
+      // If no users found or an error occurred, return an empty array instead of 404
       if (!users || users.length === 0) {
+        console.log("No users found or empty result, returning empty array");
         return res.json([]);
       }
       
