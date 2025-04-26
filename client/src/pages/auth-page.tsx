@@ -53,9 +53,12 @@ const AuthPage = () => {
               <div className="mt-4 text-center">
                 <p className="text-sm text-muted-foreground">
                   Don't have an account? 
-                  <TabsTrigger value="register" className="text-primary underline ml-2 p-0 bg-transparent">
+                  <button 
+                    onClick={() => (document.querySelector('[data-value="register"]') as HTMLElement)?.click()} 
+                    className="text-primary underline ml-2 p-0 bg-transparent border-none cursor-pointer"
+                  >
                     Create one now
-                  </TabsTrigger>
+                  </button>
                 </p>
               </div>
             </TabsContent>
@@ -66,9 +69,12 @@ const AuthPage = () => {
               <div className="mt-4 text-center">
                 <p className="text-sm text-muted-foreground">
                   Already have an account? 
-                  <TabsTrigger value="login" className="text-primary underline ml-2 p-0 bg-transparent">
+                  <button 
+                    onClick={() => (document.querySelector('[data-value="login"]') as HTMLElement)?.click()} 
+                    className="text-primary underline ml-2 p-0 bg-transparent border-none cursor-pointer"
+                  >
                     Login here
-                  </TabsTrigger>
+                  </button>
                 </p>
               </div>
             </TabsContent>
@@ -123,9 +129,12 @@ const AuthPage = () => {
           </div>
           
           <div className="mt-8">
-            <TabsTrigger value="register" className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors">
+            <button 
+              onClick={() => (document.querySelector('[data-value="register"]') as HTMLElement)?.click()} 
+              className="px-6 py-3 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors border-none cursor-pointer"
+            >
               Join Now
-            </TabsTrigger>
+            </button>
           </div>
         </div>
       </div>
