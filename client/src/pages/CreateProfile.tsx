@@ -37,10 +37,11 @@ const CreateProfile = () => {
   }
   
   // If user already has a complete profile, redirect to edit profile
-  if (currentUser && currentUser.motherTongue !== "Not Specified") {
-    navigate("/edit-profile");
-    return null;
-  }
+  useEffect(() => {
+    if (currentUser && currentUser.motherTongue !== "Not Specified") {
+      navigate("/edit-profile");
+    }
+  }, [currentUser, navigate]);
   
   return (
     <>
