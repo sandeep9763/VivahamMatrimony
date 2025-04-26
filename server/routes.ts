@@ -13,18 +13,32 @@ import bcrypt from "bcryptjs";
 import session from "express-session";
 import MemoryStore from "memorystore";
 
+// Extend the Express Session type definition
+declare module 'express-session' {
+  interface SessionData {
+    userId: number;
+  }
+}
+
 const SessionStore = MemoryStore(session);
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Set up session middleware
+  // Set up session middleware with enhanced settings
   app.use(
     session({
       secret: process.env.SESSION_SECRET || "vivaham-matrimony-secret",
       resave: false,
       saveUninitialized: false,
-      cookie: { maxAge: 24 * 60 * 60 * 1000 }, // 24 hours
+      rolling: true, // Refresh cookie expiration on activity
+      cookie: { 
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+      },
       store: new SessionStore({
         checkPeriod: 86400000, // prune expired entries every 24h
+        stale: false // Properly handle expired sessions
       }),
     })
   );
@@ -99,20 +113,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     try {
+      // Add debug logging
+      console.log(`Login attempt for username: ${username}`);
+      
       const user = await storage.getUserByUsername(username);
       
       if (!user) {
+        console.log(`User not found: ${username}`);
         return res.status(401).json({ message: "Invalid username or password" });
       }
       
+      console.log('User found, comparing passwords');
       const passwordMatch = await bcrypt.compare(password, user.password);
       
       if (!passwordMatch) {
+        console.log('Password does not match');
         return res.status(401).json({ message: "Invalid username or password" });
       }
       
+      console.log('Login successful, setting session');
       // Set session
       req.session.userId = user.id;
+      
+      // Explicitly save the session
+      await new Promise<void>((resolve, reject) => {
+        req.session.save((err) => {
+          if (err) {
+            console.error("Session save error:", err);
+            reject(err);
+          } else {
+            resolve();
+          }
+        });
+      });
       
       // Return user without password
       const { password: _, ...userWithoutPassword } = user;

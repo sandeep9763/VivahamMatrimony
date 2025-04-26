@@ -47,11 +47,19 @@ const LoginForm = ({ onLoginSuccess }: LoginFormProps) => {
   const onSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
     try {
-      await apiRequest("POST", "/api/auth/login", {
+      console.log("Attempting to login with:", values.username);
+      
+      const response = await apiRequest("POST", "/api/auth/login", {
         username: values.username,
         password: values.password,
       });
-
+      
+      console.log("Login response status:", response.status);
+      
+      // Get the user data after successful login
+      const userData = await response.json();
+      console.log("Login successful, user data received");
+      
       toast({
         title: "Login successful",
         description: "Welcome back to Vivaham Matrimony!",
@@ -67,9 +75,15 @@ const LoginForm = ({ onLoginSuccess }: LoginFormProps) => {
       }
     } catch (error) {
       console.error("Login error:", error);
+      
+      let errorMessage = "An error occurred during login. Please try again.";
+      if (error instanceof Error) {
+        errorMessage = error.message || "Invalid username or password. Please try again.";
+      }
+      
       toast({
         title: "Login failed",
-        description: "Invalid username or password. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
