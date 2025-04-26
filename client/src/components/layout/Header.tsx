@@ -175,22 +175,24 @@ const Header = ({ user, isLoading }: HeaderProps) => {
                       ) : (
                         <div className="flex flex-col space-y-2">
                           <SheetClose asChild>
-                            <Button 
-                              variant="outline" 
-                              className="w-full border-primary text-primary hover:bg-primary hover:text-white"
-                              onClick={() => setLoginModalOpen(true)}
-                            >
-                              Login
-                            </Button>
+                            <Link href="/auth" className="w-full">
+                              <Button 
+                                variant="outline" 
+                                className="w-full border-primary text-primary hover:bg-primary hover:text-white"
+                              >
+                                Login
+                              </Button>
+                            </Link>
                           </SheetClose>
                           <SheetClose asChild>
-                            <Button 
-                              variant="default" 
-                              className="w-full bg-primary text-white hover:bg-primary-dark"
-                              onClick={() => setRegisterModalOpen(true)}
-                            >
-                              Register
-                            </Button>
+                            <Link href="/auth" className="w-full">
+                              <Button 
+                                variant="default" 
+                                className="w-full bg-primary text-white hover:bg-primary-dark"
+                              >
+                                Register
+                              </Button>
+                            </Link>
                           </SheetClose>
                         </div>
                       )}
