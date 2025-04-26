@@ -15,6 +15,7 @@ import About from "@/pages/About";
 import Contact from "@/pages/Contact";
 import PrivacyPolicy from "@/pages/PrivacyPolicy";
 import TermsOfService from "@/pages/TermsOfService";
+import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
       <main className="flex-grow">
         <Switch>
           <Route path="/" component={Home} />
+          <Route path="/auth" component={AuthPage} />
           <Route path="/search" component={Search} />
           <Route path="/profile/:id">{params => <Profile id={params.id} />}</Route>
           <Route path="/create-profile" component={CreateProfile} />

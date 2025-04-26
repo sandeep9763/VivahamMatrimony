@@ -67,7 +67,7 @@ export const useAuth = () => {
         title: "Logged out",
         description: "You have been successfully logged out",
       });
-      navigate("/");
+      navigate("/auth");
     },
     onError: (error: any) => {
       toast({

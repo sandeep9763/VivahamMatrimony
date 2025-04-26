@@ -37,8 +37,8 @@ const Header = ({ user, isLoading }: HeaderProps) => {
         description: "You have been logged out of your account",
         variant: "default",
       });
-      // Navigate to home
-      navigate("/");
+      // Navigate to auth page
+      navigate("/auth");
     } catch (error) {
       console.error("Logout failed:", error);
       toast({
@@ -105,20 +105,22 @@ const Header = ({ user, isLoading }: HeaderProps) => {
                 </>
               ) : (
                 <>
-                  <Button 
-                    variant="outline" 
-                    className="border-primary text-primary hover:bg-primary hover:text-white"
-                    onClick={() => setLoginModalOpen(true)}
-                  >
-                    Login
-                  </Button>
-                  <Button 
-                    variant="default" 
-                    className="bg-primary text-white hover:bg-primary-dark"
-                    onClick={() => setRegisterModalOpen(true)}
-                  >
-                    Register
-                  </Button>
+                  <Link href="/auth">
+                    <Button 
+                      variant="outline" 
+                      className="border-primary text-primary hover:bg-primary hover:text-white"
+                    >
+                      Login
+                    </Button>
+                  </Link>
+                  <Link href="/auth">
+                    <Button 
+                      variant="default" 
+                      className="bg-primary text-white hover:bg-primary-dark"
+                    >
+                      Register
+                    </Button>
+                  </Link>
                 </>
               )}
             </div>
