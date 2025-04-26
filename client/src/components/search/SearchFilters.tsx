@@ -33,9 +33,9 @@ const SearchFilters = () => {
     parseInt(searchParams.get("ageMin") || "18"),
     parseInt(searchParams.get("ageMax") || "60")
   ]);
-  const [motherTongue, setMotherTongue] = useState(searchParams.get("motherTongue") || "");
-  const [religion, setReligion] = useState(searchParams.get("religion") || "");
-  const [maritalStatus, setMaritalStatus] = useState(searchParams.get("maritalStatus") || "");
+  const [motherTongue, setMotherTongue] = useState(searchParams.get("motherTongue") || "Any");
+  const [religion, setReligion] = useState(searchParams.get("religion") || "Any");
+  const [maritalStatus, setMaritalStatus] = useState(searchParams.get("maritalStatus") || "Any");
   const [education, setEducation] = useState(searchParams.get("education") || "");
   const [profession, setProfession] = useState(searchParams.get("profession") || "");
   const [locationFilter, setLocationFilter] = useState(searchParams.get("location") || "");
@@ -47,9 +47,12 @@ const SearchFilters = () => {
     if (gender) params.append("gender", gender);
     params.append("ageMin", ageRange[0].toString());
     params.append("ageMax", ageRange[1].toString());
-    if (motherTongue) params.append("motherTongue", motherTongue);
-    if (religion) params.append("religion", religion);
-    if (maritalStatus) params.append("maritalStatus", maritalStatus);
+    
+    // Only add filter if not 'Any'
+    if (motherTongue && motherTongue !== "Any") params.append("motherTongue", motherTongue);
+    if (religion && religion !== "Any") params.append("religion", religion);
+    if (maritalStatus && maritalStatus !== "Any") params.append("maritalStatus", maritalStatus);
+    
     if (education) params.append("education", education);
     if (profession) params.append("profession", profession);
     if (locationFilter) params.append("location", locationFilter);
@@ -61,9 +64,9 @@ const SearchFilters = () => {
   const resetFilters = () => {
     setGender("");
     setAgeRange([18, 60]);
-    setMotherTongue("");
-    setReligion("");
-    setMaritalStatus("");
+    setMotherTongue("Any");
+    setReligion("Any");
+    setMaritalStatus("Any");
     setEducation("");
     setProfession("");
     setLocationFilter("");
@@ -110,7 +113,7 @@ const SearchFilters = () => {
               <SelectValue placeholder="Any" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any</SelectItem>
+              <SelectItem value="Any">Any</SelectItem>
               <SelectItem value="Telugu">Telugu</SelectItem>
               <SelectItem value="Tamil">Tamil</SelectItem>
               <SelectItem value="Kannada">Kannada</SelectItem>
@@ -129,7 +132,7 @@ const SearchFilters = () => {
               <SelectValue placeholder="Any" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any</SelectItem>
+              <SelectItem value="Any">Any</SelectItem>
               <SelectItem value="Hindu">Hindu</SelectItem>
               <SelectItem value="Muslim">Muslim</SelectItem>
               <SelectItem value="Christian">Christian</SelectItem>
@@ -147,7 +150,7 @@ const SearchFilters = () => {
               <SelectValue placeholder="Any" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Any</SelectItem>
+              <SelectItem value="Any">Any</SelectItem>
               <SelectItem value="Never Married">Never Married</SelectItem>
               <SelectItem value="Divorced">Divorced</SelectItem>
               <SelectItem value="Widowed">Widowed</SelectItem>
